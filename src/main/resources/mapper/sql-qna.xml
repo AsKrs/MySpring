@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pj1.mapper.QnaMapper">
+	<select id="selectQnaList" parameterType="int" resultType="pj1.dto.QnaDto">
+		select qna_idx,
+		item_num,
+		mem_email,
+		qna_title,
+		qna_contents,
+		date_format(qna_writeDate, '%m.%d %H:%i') as
+		qna_writeDate,
+		qna_ans
+		from qna
+		where qna_save = 'Y' AND
+		item_num = #{itemNum}
+		order by qna_idx desc
+	</select>
+	<select id="selectQnaAnswer" resultType="pj1.dto.QnaDto">
+		select
+		qna_comment_idx,
+		qna_comment_content,
+		date_format(qna_comment_writeDate, '%m.%d %H:%i') as
+		qna_comment_writeDate
+		from qna q inner join qna_comment qc on q.qna_idx = qc.qna_idx
+		where q.qna_idx = #{qnaIdx}
+	</select>
+	
+	<select id="selectQnaDetail" parameterType="int" resultType="pj1.dto.QnaDto">
+		select qna_idx, qna_contents, mem_email,
+		date_format(qna_writeDate, '%m.%d %H:%i') as
+		qna_writeDate,qna_comment_content
+		from qna
+		where qna_idx
+		=
+		#{qnaIdx}
+	</select>
+	
+	<select id="selectAllQnaList" resultType="pj1.dto.QnaDto">
+	select *
+	from qna where qna_save = 'Y' order by qna_idx desc;
+	</select>
+	<insert id="insertQna" parameterType="pj1.dto.QnaDto">
+		insert into qna
+		(item_num,mem_email,qna_title, qna_contents, qna_writeDate)
+		values (
+		#{itemNum},
+		#{memEmail},
+		#{qnaTitle},
+		#{qnaContents}, now()
+		)
+	</insert>
+
+	<update id="insertQnaComment" parameterType="pj1.dto.QnaDto">
+		update qna set qna_comment_content = #{qnaCommentContent}, qna_comment_writeDate = now(), qna_ans = 'Y' where qna_idx = #{qnaIdx}
+	</update>
+	
+
+	<delete id="deleteQna" parameterType="int">
+		update qna set
+		qna_save =
+		'N'
+		where qna_idx = #{qnaIdx}
+	</delete>
+
+</mapper>

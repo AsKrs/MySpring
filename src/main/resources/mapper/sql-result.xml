@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pj1.mapper.ResultMapper">
+	<select id="selectResultList" resultType="pj1.dto.ResultDto">
+		select result_idx,
+		mem_email,
+		result_user,
+		date_format(result_date, '%m.%d %H:%i') as
+		result_date
+		from
+		result
+		where result_save = 'Y'
+		order by result_idx desc
+	</select>
+	<insert id="insertResult" parameterType="pj1.dto.ResultDto">
+		insert into result
+		(result_user, result_liver, result_eyes, result_vitamin, result_blood,
+		result_diges, result_date, mem_email, result_save)
+		values (
+		#{resultUser},
+		#{resultLiver}, #{resultEyes}, #{resultVitamin},
+		#{resultBlood},
+		#{resultDiges}, now(), #{memEmail},#{resultSave} )
+	</insert>
+
+	<select id="selectResultDetail" parameterType="int"
+		resultType="pj1.dto.ResultDto">
+		select result_idx, result_user, result_liver, result_eyes,
+		result_vitamin, result_blood,
+		result_diges,
+		date_format(result_date,
+		'%Y.%m.%d %H:%i') as
+		result_date
+		, mem_email
+		from result
+		where result_idx
+		=
+		#{resultIdx}
+	</select>
+
+	<delete id="deleteResult" parameterType="int">
+		update result set
+		result_save = 'N'
+		where result_idx = #{resultIdx}
+	</delete>
+
+</mapper>

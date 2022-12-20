@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pj1.mapper.OrderMapper">
+
+	<insert id="insertOrder" parameterType="pj1.dto.OrderItemDto">
+		insert into ordereditem (order_num,mem_email,address1,address2,address3, recipient, recipient_phone) 
+			values (#{orderNum},#{memEmail},#{address1},#{address2},#{address3}, #{recipient}, #{recipientPhone});
+	</insert>
+	
+	<insert id="insertOrderDetail" parameterType="pj1.dto.OrderItemDto">
+		insert into orderlist (order_num ,mem_idx,mem_email,item_name ,item_num , item_amount , item_price,item_thumb) 
+			values 
+			<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.orderNum},#{item.memIdx},#{item.memEmail},#{item.itemName},#{item.itemNum},#{item.itemAmount},#{item.itemPrice},#{item.itemThumb})
+			</foreach>
+	</insert>
+	
+	<insert id="insertPaymentOrder" parameterType="pj1.dto.PaymentOrderDateDto">
+		insert into pod (order_num, payment_type, payment_date, payment_price, deposit_price, deposit_name, deposit_bank) 
+		<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+			values (#{orderNum},#{paymentType}, now(),#{paymentPrice}, #{depositPrice}, #{depositName},#{depositBank} );
+		</foreach>
+	</insert>
+	
+	
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pj1.mapper.NoticeMapper">
+	<select id="selectNoticeList" resultType="pj1.dto.NoticeDto">
+		select  notice_idx, notice_title, notice_contents, date_format(notice_writeDate, '%m.%d') as notice_writeDate
+		from notice ;
+	</select>
+	
+	<select id="selectNoticeDetail" parameterType="int" resultType="pj1.dto.NoticeDto">
+		select notice_idx, notice_title, notice_contents, date_format(notice_writeDate, '%m.%d') as notice_writeDate
+		from notice where notice_idx = #{noticeIdx}
+	</select>
+	
+</mapper>

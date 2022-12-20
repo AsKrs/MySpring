@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pj1.mapper.ItemMapper">
+	<select id="selectItemList" resultType="pj1.dto.ItemDto">
+		 select item_num,item_name, item_price, item_count,item_thumb,item_detailImg,item_organs
+		  from item where item_deleted_yn ='N' order by item_created_at desc;
+	</select>
+	
+	<select id="selectItemOrgans" parameterType="String" resultType="pj1.dto.ItemDto">
+		select * 
+			from item where item_organs = #{itemOrgans} and item_deleted_yn = 'N' order by item_created_at desc;
+	</select>
+	
+	<select id="selectItemDetail" parameterType="String" resultType="pj1.dto.ItemDto">
+		select * 
+		from item where item_deleted_yn = 'N' and item_num = #{itemNum}
+	</select>
+	
+	<insert id="itemWrite" parameterType="pj1.dto.ItemDto">
+		insert into item (item_num, item_name, item_price, item_thumb, item_detailImg, item_maker, item_how, item_expDate, 
+			item_materials, item_organs, item_thumb_name, item_detailImg_name
+			) values (#{itemNum}, #{itemName},#{itemPrice},#{itemThumb},#{itemDetailImg},#{itemMaker},#{itemHow},#{itemExpDate},
+			#{itemMaterials}, #{itemOrgans},#{itemThumbName},#{itemDetailImgName})
+	</insert>
+	
+	<update id="itemUpdate" parameterType="pj1.dto.ItemDto">
+		update item set item_name=#{itemName}, item_price=#{itemPrice}, item_thumb=#{itemThumb}, item_detailImg=#{itemDetailImg}, item_maker=#{itemMaker},
+		 item_how =#{itemHow}, item_expDate=#{itemExpDate},item_materials=#{itemMaterials}, item_organs=#{itemOrgans},
+		 item_thumb_name =#{itemThumbName}, item_detailImg_name =#{itemDetailImgName} where item_num = #{itemNum};
+	</update>
+</mapper>
+

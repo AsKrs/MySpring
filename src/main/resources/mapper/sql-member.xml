@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pj1.mapper.MemberMapper">
+	<select id="selectMemberList" resultType="pj1.dto.MemberDto">
+		select
+		mem_idx,mem_Name, mem_email, date_format(mem_regDate, '%Y.%m.%d')
+		as mem_regDate, mem_addr1, mem_addr2,role,
+		mem_phone,mem_deleted_yn from member order by mem_idx desc
+
+	</select>
+	
+	<select id="validateMemberEmail" parameterType="String"
+		resultType="pj1.dto.MemberDto">
+		select mem_email from member
+		where mem_deleted_yn = 'N' and
+		mem_email =#{memEmail}
+	</select>
+	
+	<select id="findByMemberEmail" parameterType="pj1.dto.MemberDto" resultType="pj1.dto.MemberDto">
+	select * from member where mem_email=#{memEmail}
+	</select>
+
+	<select id="findEmail" parameterType="String"
+		resultType="pj1.dto.MemberDto">
+		select mem_email from member
+		where mem_deleted_yn = 'N' and
+		mem_name=#{memName} and
+		mem_phone=#{memPhone}
+	</select>
+
+	<select id="findPassword" parameterType="pj1.dto.MemberDto" resultType="pj1.dto.MemberDto">
+		select * from member
+		where mem_deleted_yn = 'N' and
+		mem_email =#{memEmail} and
+		mem_name=#{memName} and
+		mem_phone=#{memPhone}
+	</select>
+
+	<insert id="insertMember" parameterType="pj1.dto.MemberDto">
+		insert into
+		member(mem_name,mem_phone,mem_postnum,mem_addr1,mem_addr2,mem_email,mem_pw)
+		values(#{memName},#{memPhone},#{memPostNum},#{memAddr1},#{memAddr2},#{memEmail},#{memPw})
+
+		<selectKey keyProperty="memIdx" resultType="Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="login" parameterType="pj1.dto.MemberDto"
+		resultType="pj1.dto.MemberDto">
+		select * from member
+		where mem_email = #{memEmail} 
+		<!--  and mem_pw = #{memPw}  -->
+	</select>
+	
+	<select id="selectMemberDetail" parameterType="int"
+		resultType="pj1.dto.MemberDto">
+		select mem_idx, role, mem_email, mem_name, mem_birth, mem_phone,
+		mem_postnum, mem_pw,
+		mem_addr1, mem_addr2, date_format(mem_regDate, '%Y.%m.%d
+		%H:%i:%s')
+		as mem_regDate from member where mem_idx=#{memIdx};
+	</select>
+	
+		<select id="selectDetailMember" parameterType="String"
+		resultType="pj1.dto.MemberDto">
+		select mem_idx, role, mem_email, mem_name, mem_birth, mem_phone,
+		mem_postnum, mem_pw,
+		mem_addr1, mem_addr2, date_format(mem_regDate, '%Y.%m.%d
+		%H:%i:%s')
+		as mem_regDate from member where mem_email=#{memEmail};
+	</select>
+
+	<update id="updateMemberInfo"
+		parameterType="pj1.dto.MemberDto">
+		update member set mem_pw=#{memPw},
+		mem_phone=#{memPhone},
+		mem_postnum=#{memPostNum}, mem_addr1=#{memAddr1},
+		mem_addr2=#{memAddr2}, mem_updateDate = now() where mem_idx=#{memIdx};
+	</update>
+	
+	<delete id="deleteMemberInfo" parameterType="int">
+		update member set mem_deleted_yn = 'Y', mem_updateDate = now() where mem_idx = #{memIdx};
+	</delete>
+	
+	
+	<delete id = "ydeleteMember" parameterType="int">
+		delete from member where mem_idx=#{memIdx} and mem_deleted_yn = "Y"
+	</delete>
+	
+	<update id = "adminmemupdate" parameterType="pj1.dto.MemberDto">
+		update member set mem_deleted_yn = #{memDeletedYn} , mem_name = #{memName} where mem_idx=#{memIdx}
+	</update>
+	
+	
+	<update id="updateMemberPW" parameterType="pj1.dto.MemberDto">
+	update member set mem_pw=#{memPw},mem_updateDate =now() where mem_idx=#{memIdx};
+	</update>
+
+
+
+</mapper>
+
+
+
+<!-- <select id="selectMemberList" resultType="board.dto.MemberDto"> select 
+	member_seq, member_name, member_email , date_format(created_datetime, '%Y.%m.%d 
+	%H:%i:%s') as created_datetime from t_member where deleted_yn = 'N' order 
+	by member_seq desc </select> -->

@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "token.expiration-time",
+    "type": "java.lang.String",
+    "description": "A description for 'token.expiration-time'"
+  },
+  {
+    "name": "token.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'token.secret'"
+  }
+]}
