@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pj1.mapper.CartMapper">
+
+	<insert id="insertCart" parameterType="pj1.dto.CartDto">
+		insert into
+		cart(mem_email, item_num, item_amount, item_price)
+		values(#{memEmail},#{itemNum},#{itemAmount},#{itemPrice});
+	</insert>
+
+
+	<select id="selectCartList" parameterType="String"
+		resultType="pj1.dto.CartListDto">
+		select c.cart_idx
+		,c.mem_email,c.item_num,c.item_amount,i.item_name,i.item_price,i.item_thumb
+		from cart c inner join item i on c.item_num = i.item_num inner join
+		member m on c.mem_email = m.mem_email where c.mem_email = #{memEmail};
+	</select>
+
+	<!-- 선택된 게시글 삭제하기 -->
+	<delete id="deleteCartList" parameterType="int">
+		DELETE FROM cart
+		<where>
+			cart_idx IN
+			<foreach collection="list" item="item" index="index"
+				separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</where>
+	</delete>
+	
+	<update id="updateCartList" parameterType="int">
+		UPDATE cart SET item_amount = #{itemAmount}  WHERE cart_idx = #{cartIdx}; 
+	</update>
+
+</mapper>

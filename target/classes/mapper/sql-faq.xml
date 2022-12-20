@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pj1.mapper.FaqMapper">
+
+<select id = "selectFaqList" resultType="pj1.dto.FaqDto">
+	select faq_idx, faq_class, faq_title, faq_contents, 
+	date_format(faq_created_at ,'%y.%m.%d %h:%i:%s') as faq_created_at 
+	from faq where faq_deleted_yn ='N'
+	order by faq_idx asc
+</select>
+
+
+
+
+
+
+</mapper>
+

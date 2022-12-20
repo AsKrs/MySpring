@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pj1.mapper.OrderlistMapper">
+
+	<select id="selectOrderlist" parameterType="int" resultType="pj1.dto.OrderlistDto">
+		select mem_idx, order_num, item_num, item_amount, item_name, item_price, order_status,
+		date_format(order_date, '%Y.%m.%d') as order_date,item_thumb,orderlist_idx
+		from orderlist where mem_idx=#{memIdx} and refund_yn = 'N' order by orderlist_idx desc
+	</select>
+	
+	
+	<select id="selectRefund" parameterType="int" resultType="pj1.dto.OrderlistDto">
+	select r.mem_idx, r.item_name,o.order_num ,r.orderlist_idx, r.refund_idx, r.refund_reason, r.refund_status, r.item_price, o.item_thumb,
+		date_format(refund_date, '%Y.%m.%d') as refund_date
+		from refund r left join orderlist o on r.orderlist_idx = o.orderlist_idx where r.mem_idx= #{memIdx} order by refund_date desc;
+	</select>
+
+	<select id="selectAbleReview" parameterType="int" resultType="pj1.dto.OrderlistDto">
+		select r.review_idx, o.orderlist_idx, o.item_name, o.mem_idx, o.order_num, o.item_thumb, r.item_num, r.review_write_yn, 
+		r.review_contents, date_format(o.order_date, '%Y.%m.%d') as order_date ,date_format(r.review_writeDate, '%Y.%m.%d') as review_writeDate 
+		from review r left join orderlist o on r.order_num = o.order_num 
+		where r.mem_idx =#{memIdx} and o.refund_yn = 'N' and r.review_write_yn = 'N' and o.order_status = '구매확정' order by order_date desc
+	</select>
+	
+	<update id="insertReview" parameterType="pj1.dto.OrderlistDto" >
+		update review set review_contents = #{reviewContents}, review_write_yn = 'Y', review_writeDate = now() where orderlist_idx = #{orderlistIdx}
+	</update>
+	
+	<select id="selectDidReview" parameterType="int" resultType="pj1.dto.OrderlistDto">
+		select r.review_idx, o.orderlist_idx ,o.item_name, o.item_thumb, r.review_contents,r.review_delete_yn, date_format(review_writeDate, '%Y.%m.%d') as review_writeDate from review r 
+		left join orderlist o on r.orderlist_idx = o.orderlist_idx 
+		where review_write_yn = 'Y' and o.mem_idx = #{memIdx} order by review_idx desc;
+	</select>
+	
+	<select id="selectReviewDetail" parameterType="int" resultType="pj1.dto.OrderlistDto">
+		select review_idx, item_num , item_name,review_contents from review where review_idx = #{reviewIdx}
+	</select>
+
+	<update id="updateReview" parameterType="pj1.dto.OrderlistDto" >
+		update review set review_contents = #{reviewContents}, review_updateDate = now() where review_idx = #{reviewIdx}
+	</update>
+	
+	<update id="orderCancelNow" parameterType="int" >
+		update orderlist set order_status = '취소완료' where orderlist_idx = #{orderlistIdx}
+	</update>
+	
+	<update id="orderCancelPlz" parameterType="int" >
+		update orderlist set order_status = '취소처리중' where orderlist_idx = #{orderlistIdx}
+	</update>
+	
+	<delete id="orderListDelete" parameterType="String">
+		delete from orderlist WHERE orderlist_idx = #{orderlistIdx};
+	</delete> 
+	<delete id="orderDelete" parameterType="String">
+		delete from ordereditem where order_num = #{orderNum};
+	</delete>
+	
+	
+	<update id="itemPurchase" parameterType="int" >
+		update orderlist set order_status = '구매확정' where orderlist_Idx = #{orderlistIdx}
+	</update>
+	
+	<insert id="insertAbleReview" parameterType="pj1.dto.OrderlistDto">
+		insert into review(mem_idx, item_num, item_name, order_num, orderlist_idx) values(#{memIdx}, #{itemNum}, #{itemName}, #{orderNum}, #{orderlistIdx})
+	</insert>
+		
+	
+	
+	
+	<update id="updateRefund" parameterType="int" >
+		update orderlist set refund_yn = 'Y' where orderlist_idx = #{orderlistIdx}
+	</update>
+	
+	<insert id="insertMyRefund" parameterType="pj1.dto.OrderlistDto">
+		insert into refund(mem_idx, orderlist_idx, item_name, refund_reason, item_price) 
+		values(#{memIdx}, #{orderlistIdx}, #{itemName}, #{refundReason}, #{itemPrice})
+	</insert>
+	
+	<update id="updateRefundCancel" parameterType="int" >
+		update orderlist set refund_yn = 'N' where orderlist_idx = #{orderlistIdx}
+	</update>
+	
+	<update id="deleteRefund" parameterType="int">
+		update refund set refund_status = '반품취소' where refund_idx = #{refundIdx}
+	</update>
+	
+	
+	
+	
+	
+	
+	<update id="orderState" parameterType="int">
+		update orderlist set order_status = "상품준비중" where orderlist_idx = #{orderlist_idx}
+	</update>
+	
+	<update id="orderStateDelivery" parameterType="int">
+		update orderlist set order_status = "배송중" where orderlist_idx = #{orderlist_idx}
+	</update>
+	
+	<update id="orderStateComple" parameterType="int">
+		update orderlist set order_status = "배송완료" where orderlist_idx = #{orderlist_idx}
+	</update>
+	
+	<update id="orderStateCancle" parameterType="int">
+		update orderlist set order_status = "취소완료" where orderlist_idx = #{orderlist_idx}
+	</update>
+	
+	<select id="selectAllOrderlist" resultType="pj1.dto.OrderlistDto">
+		select orderlist_idx,mem_idx, mem_email, order_num, item_num, item_amount, item_name, item_price, order_status,
+		date_format(order_date, '%Y.%m.%d') as order_date,item_thumb
+		from orderlist where order_status not in ("구매확정","취소완료","배송완료") order by orderlist_idx desc;
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0/EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pj1.mapper.AdminMapper">
+
+	<select id = "selectAllReview" resultType="pj1.dto.AdminDto">
+		select * from review
+	</select>
+	
+	<select id = "selectAdminItemList" resultType="pj1.dto.ItemDto">
+		select * from item where item_deleted_yn = 'N' order by item_created_at desc;
+	</select>
+	
+	<delete id = "deleteReview" parameterType="int">
+		update review set review_delete_yn = 'Y' where review_idx = #{reviewIdx}
+	</delete>
+
+	<delete id = "showReview" parameterType="int">
+		update review set review_delete_yn = 'N' where review_idx = #{reviewIdx}
+	</delete>
+	
+	<select id = "selectAllRefund" resultType="pj1.dto.AdminDto">
+		select r.mem_idx, r.item_name,o.order_num ,r.orderlist_idx, r.refund_idx, r.refund_reason, r.refund_status, r.item_price, o.item_thumb,
+		date_format(refund_date, '%Y.%m.%d') as refund_date
+		from refund r left join orderlist o on r.orderlist_idx = o.orderlist_idx
+	</select>
+	
+	<update id = "updateStatus" parameterType="int">
+		update refund set refund_status = '반품완료' where refund_idx = #{refundIdx}
+	</update>
+	
+	<update id = "deleteItem" parameterType="pj1.dto.ItemDto">
+		update item set item_deleted_yn = 'Y' where item_num = #{itemNum}
+	</update>
+	
+	<update id="adminUpdateMemberPW"
+		parameterType="pj1.dto.MemberDto">
+		update member set mem_name=#{memName}, mem_email=#{memEmail},
+		mem_phone=#{memPhone}, mem_updateDate = now() where mem_idx=#{memIdx};
+	</update>
+	
+	
+	
+</mapper>
